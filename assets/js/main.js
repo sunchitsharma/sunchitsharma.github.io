@@ -1,247 +1,268 @@
-/**
-* Template Name: Personal - v4.7.0
-* Template URL: https://bootstrapmade.com/personal-free-resume-bootstrap-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-(function() {
-  "use strict";
+/* ===========================================================
+   Sunchit Sharma — scroll-driven canvas hero + scene reveals
+=============================================================*/
 
-  /**
-   * Easy selector helper function
-   */
-  const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
+(() => {
+  'use strict';
+
+  const FRAME_COUNT = 240;
+  const FRAME_PATH = (i) => `assets/img/hero/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
+
+  // Canvas & scroll state
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  const heroSection = document.querySelector('.hero');
+  const overlays = document.querySelectorAll('.hero-phase');
+  const scrollHint = document.querySelector('.hero-scroll-hint');
+  const preloader = document.getElementById('preloader');
+  const preFill = document.getElementById('preloader-fill');
+  const prePct = document.getElementById('preloader-pct');
+
+  const images = new Array(FRAME_COUNT);
+  let currentFrame = -1;
+  let canvasWidth = 0;
+  let canvasHeight = 0;
+  let rafPending = false;
+  let targetProgress = 0;
+  let smoothProgress = 0;
+
+  // Year
+  const yr = document.getElementById('year');
+  if (yr) yr.textContent = new Date().getFullYear();
+
+  /* ---------- Canvas sizing (HiDPI) ---------- */
+  function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvasWidth = w;
+    canvasHeight = h;
+    currentFrame = -1; // force re-draw
+    renderFrame(getFrameForProgress(smoothProgress));
+  }
+
+  /* ---------- Draw frame, cover-fit, cinematic ---------- */
+  function drawCover(img) {
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    if (!iw || !ih) return;
+
+    // Crop out "Veo" watermark in bottom-right corner of source.
+    const cropBottom = Math.floor(ih * 0.08);
+    const srcW = iw;
+    const srcH = ih - cropBottom;
+
+    const cw = canvasWidth;
+    const ch = canvasHeight;
+
+    const isMobile = cw < 760;
+    const imgRatio = srcW / srcH;
+    const canvasRatio = cw / ch;
+
+    let dw, dh, dx, dy;
+
+    if (isMobile) {
+      // cover
+      if (imgRatio > canvasRatio) {
+        dh = ch; dw = ch * imgRatio;
+      } else {
+        dw = cw; dh = cw / imgRatio;
+      }
     } else {
-      return document.querySelector(el)
+      // contain - portrait centered with breathing room
+      const scale = Math.min(cw / srcW, ch / srcH) * 0.95;
+      dw = srcW * scale;
+      dh = srcH * scale;
+    }
+    dx = (cw - dw) / 2;
+    dy = (ch - dh) / 2;
+
+    ctx.fillStyle = '#05060a';
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.drawImage(img, 0, 0, srcW, srcH, dx, dy, dw, dh);
+
+    // subtle radial vignette to blend edges on desktop (source-over with alpha)
+    if (!isMobile) {
+      const grd = ctx.createRadialGradient(cw / 2, ch / 2, Math.min(cw, ch) * 0.3, cw / 2, ch / 2, Math.max(cw, ch) * 0.7);
+      grd.addColorStop(0, 'rgba(5,6,10,0)');
+      grd.addColorStop(1, 'rgba(5,6,10,0.55)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, cw, ch);
     }
   }
 
-  /**
-   * Easy event listener function
-   */
-  const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
+  function renderFrame(i) {
+    if (i === currentFrame) return;
+    const img = images[i];
+    if (!img || !img.complete || !img.naturalWidth) {
+      // fall back to nearest ready frame
+      for (let d = 1; d < FRAME_COUNT; d++) {
+        const a = images[i - d]; const b = images[i + d];
+        if (a && a.complete && a.naturalWidth) { drawCover(a); break; }
+        if (b && b.complete && b.naturalWidth) { drawCover(b); break; }
       }
+      return;
+    }
+    drawCover(img);
+    currentFrame = i;
+  }
+
+  /* ---------- Scroll -> frame mapping ---------- */
+  function getProgress() {
+    const rect = heroSection.getBoundingClientRect();
+    const total = heroSection.offsetHeight - window.innerHeight;
+    const scrolled = Math.min(Math.max(-rect.top, 0), total);
+    return total > 0 ? scrolled / total : 0;
+  }
+
+  function getFrameForProgress(p) {
+    return Math.max(0, Math.min(FRAME_COUNT - 1, Math.floor(p * FRAME_COUNT)));
+  }
+
+  /* ---------- Overlay phases ----------
+     Map scroll progress ranges to which overlay is visible. */
+  const PHASES = [
+    { key: 'intro', start: 0.00, end: 0.10 },
+    { key: 'p1',    start: 0.14, end: 0.32 },
+    { key: 'p2',    start: 0.40, end: 0.60 },
+    { key: 'p3',    start: 0.66, end: 0.82 },
+    { key: 'final', start: 0.86, end: 1.01 },
+  ];
+
+  function updateOverlays(p) {
+    PHASES.forEach(ph => {
+      const el = document.querySelector(`.hero-phase[data-phase="${ph.key}"]`);
+      if (!el) return;
+      const visible = p >= ph.start && p <= ph.end;
+      el.classList.toggle('is-in', visible);
+    });
+    if (scrollHint) scrollHint.classList.toggle('is-hidden', p > 0.04);
+  }
+
+  /* ---------- rAF smoothing loop ---------- */
+  function tick() {
+    smoothProgress += (targetProgress - smoothProgress) * 0.18;
+    const frame = getFrameForProgress(smoothProgress);
+    renderFrame(frame);
+    updateOverlays(smoothProgress);
+
+    if (Math.abs(targetProgress - smoothProgress) > 0.0002) {
+      requestAnimationFrame(tick);
+    } else {
+      rafPending = false;
+    }
+  }
+  function onScroll() {
+    targetProgress = getProgress();
+    if (!rafPending) {
+      rafPending = true;
+      requestAnimationFrame(tick);
     }
   }
 
-  /**
-   * Scrolls to an element with header offset
-   */
-  const scrollto = (el) => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    })
-  }
+  /* ---------- Preloader ---------- */
+  function preload() {
+    let loaded = 0;
+    // First and last frames prioritised so hero paints immediately.
+    const priority = [0, FRAME_COUNT - 1, Math.floor(FRAME_COUNT / 2)];
+    const rest = [];
+    for (let i = 0; i < FRAME_COUNT; i++) if (!priority.includes(i)) rest.push(i);
+    const order = priority.concat(rest);
 
-  /**
-   * Mobile nav toggle
-   */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('#navbar').classList.toggle('navbar-mobile')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-  })
+    return new Promise(resolve => {
+      let firstPainted = false;
 
-  /**
-   * Scrool with ofset on links with a class name .scrollto
-   */
-  on('click', '#navbar .nav-link', function(e) {
-    let section = select(this.hash)
-    if (section) {
-      e.preventDefault()
+      order.forEach(i => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.src = FRAME_PATH(i + 1);
+        images[i] = img;
 
-      let navbar = select('#navbar')
-      let header = select('#header')
-      let sections = select('section', true)
-      let navlinks = select('#navbar .nav-link', true)
+        const done = () => {
+          loaded++;
+          const pct = Math.round((loaded / FRAME_COUNT) * 100);
+          if (preFill) preFill.style.width = pct + '%';
+          if (prePct) prePct.textContent = pct;
 
-      navlinks.forEach((item) => {
-        item.classList.remove('active')
-      })
-
-      this.classList.add('active')
-
-      if (navbar.classList.contains('navbar-mobile')) {
-        navbar.classList.remove('navbar-mobile')
-        let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
-      }
-
-      if (this.hash == '#header') {
-        header.classList.remove('header-top')
-        sections.forEach((item) => {
-          item.classList.remove('section-show')
-        })
-        return;
-      }
-
-      if (!header.classList.contains('header-top')) {
-        header.classList.add('header-top')
-        setTimeout(function() {
-          sections.forEach((item) => {
-            item.classList.remove('section-show')
-          })
-          section.classList.add('section-show')
-
-        }, 350);
-      } else {
-        sections.forEach((item) => {
-          item.classList.remove('section-show')
-        })
-        section.classList.add('section-show')
-      }
-
-      scrollto(this.hash)
-    }
-  }, true)
-
-  /**
-   * Activate/show sections on load with hash links
-   */
-  window.addEventListener('load', () => {
-    if (window.location.hash) {
-      let initial_nav = select(window.location.hash)
-
-      if (initial_nav) {
-        let header = select('#header')
-        let navlinks = select('#navbar .nav-link', true)
-
-        header.classList.add('header-top')
-
-        navlinks.forEach((item) => {
-          if (item.getAttribute('href') == window.location.hash) {
-            item.classList.add('active')
-          } else {
-            item.classList.remove('active')
+          if (!firstPainted && images[0] && images[0].complete && images[0].naturalWidth) {
+            firstPainted = true;
+            renderFrame(0);
           }
-        })
-
-        setTimeout(function() {
-          initial_nav.classList.add('section-show')
-        }, 350);
-
-        scrollto(window.location.hash)
-      }
-    }
-  });
-
-  /**
-   * Skills animation
-   */
-  let skilsContent = select('.skills-content');
-  if (skilsContent) {
-    new Waypoint({
-      element: skilsContent,
-      offset: '80%',
-      handler: function(direction) {
-        let progress = select('.progress .progress-bar', true);
-        progress.forEach((el) => {
-          el.style.width = el.getAttribute('aria-valuenow') + '%'
-        });
-      }
-    })
+          if (loaded === FRAME_COUNT) resolve();
+        };
+        img.onload = done;
+        img.onerror = done; // tolerate missing frames
+      });
+    });
   }
 
-  /**
-   * Testimonials slider
-   */
-  new Swiper('.testimonials-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20
-      },
-
-      1200: {
-        slidesPerView: 3,
-        spaceBetween: 20
-      }
-    }
-  });
-
-  /**
-   * Porfolio isotope and filter
-   */
-  window.addEventListener('load', () => {
-    let portfolioContainer = select('.portfolio-container');
-    if (portfolioContainer) {
-      let portfolioIsotope = new Isotope(portfolioContainer, {
-        itemSelector: '.portfolio-item',
-        layoutMode: 'fitRows'
+  /* ---------- Section reveal-on-scroll ---------- */
+  function initReveal() {
+    const targets = document.querySelectorAll(
+      '.section .display, .section .eyebrow, .intro-grid > *, .work-list > *, .timeline-item, .awards-grid > *, .contact-sub, .contact-actions'
+    );
+    targets.forEach((el, i) => {
+      el.classList.add('reveal');
+      el.style.transitionDelay = ((i % 6) * 60) + 'ms';
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-in');
+          io.unobserve(e.target);
+        }
       });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    targets.forEach(el => io.observe(el));
+  }
 
-      let portfolioFilters = select('#portfolio-flters li', true);
+  /* ---------- Boot ---------- */
+  function boot() {
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
 
-      on('click', '#portfolio-flters li', function(e) {
-        e.preventDefault();
-        portfolioFilters.forEach(function(el) {
-          el.classList.remove('filter-active');
-        });
-        this.classList.add('filter-active');
+    // Paint frame 0 immediately so hero isn't black.
+    const first = images[0];
+    if (first && first.complete) renderFrame(0);
 
-        portfolioIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-      }, true);
+    // Kick one cycle.
+    targetProgress = getProgress();
+    requestAnimationFrame(tick);
+    updateOverlays(targetProgress);
+  }
+
+  // Start preload immediately, render what we can, reveal page when >= 35% loaded.
+  preload();
+  // Show page as soon as the first frame is ready — don't wait for all 240.
+  const waitForStart = setInterval(() => {
+    if (images[0] && images[0].complete && images[0].naturalWidth) {
+      clearInterval(waitForStart);
+      boot();
+      initReveal();
+      // smoothly hide preloader
+      setTimeout(() => {
+        if (preloader) preloader.classList.add('done');
+      }, 400);
     }
+  }, 50);
 
+  /* ---------- Smooth anchor scroll offset (nav) ---------- */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (id.length < 2) return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   });
 
-  /**
-   * Initiate portfolio lightbox 
-   */
-  const portfolioLightbox = GLightbox({
-    selector: '.portfolio-lightbox'
-  });
-
-  /**
-   * Initiate portfolio details lightbox 
-   */
-  const portfolioDetailsLightbox = GLightbox({
-    selector: '.portfolio-details-lightbox',
-    width: '90%',
-    height: '90vh'
-  });
-
-  /**
-   * Portfolio details slider
-   */
-  new Swiper('.portfolio-details-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
-
-})()
+})();

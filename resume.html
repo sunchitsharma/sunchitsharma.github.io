@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sunchit Sharma Resume</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #4b5563;
+      --faint: #6b7280;
+      --line: #d7dce3;
+      --soft: #f6f8fb;
+      --accent: #1f3a5f;
+      --accent-soft: #e9eef7;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #fff; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      font-size: 9.35pt;
+      line-height: 1.36;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @page { size: A4; margin: 10mm; }
+    a { color: inherit; text-decoration: none; }
+    .page { max-width: 186mm; margin: 0 auto; }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10mm;
+      align-items: end;
+      padding-bottom: 4mm;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 4mm;
+    }
+    h1 {
+      margin: 0;
+      font-size: 25pt;
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+    }
+    .headline {
+      margin: 2mm 0 0;
+      color: var(--accent);
+      font-size: 11.2pt;
+      font-weight: 650;
+    }
+    .contact {
+      display: grid;
+      gap: 1.2mm;
+      color: var(--muted);
+      font-size: 8.7pt;
+      text-align: right;
+      white-space: nowrap;
+    }
+    section { margin-bottom: 4.2mm; break-inside: avoid; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      margin-bottom: 2.1mm;
+    }
+    h2 {
+      margin: 0;
+      color: var(--accent);
+      font-size: 8.3pt;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .rule { height: 1px; background: var(--line); flex: 1; }
+    .summary {
+      margin: 0;
+      color: #273142;
+      font-size: 9.7pt;
+    }
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.3mm;
+    }
+    .skill {
+      padding: 1.1mm 2.4mm;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: #26364f;
+      font-size: 8.4pt;
+      font-weight: 600;
+    }
+    .role {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4mm;
+      margin-bottom: 3.1mm;
+      break-inside: avoid;
+    }
+    .role:last-child { margin-bottom: 0; }
+    .role-main { min-width: 0; }
+    .role-title {
+      display: flex;
+      align-items: baseline;
+      gap: 2mm;
+      flex-wrap: wrap;
+      margin-bottom: 0.7mm;
+    }
+    h3 {
+      margin: 0;
+      font-size: 11.2pt;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+    }
+    .company {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .role-meta {
+      color: var(--faint);
+      font-size: 8.8pt;
+      margin-bottom: 1.5mm;
+    }
+    .dates {
+      color: var(--muted);
+      font-size: 8.7pt;
+      text-align: right;
+      white-space: nowrap;
+      padding-top: 0.3mm;
+    }
+    ul {
+      margin: 0;
+      padding-left: 4.3mm;
+    }
+    li { margin: 0.45mm 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2.4mm;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 3mm;
+      padding: 2.5mm;
+      break-inside: avoid;
+    }
+    .card h3 {
+      font-size: 10.5pt;
+      margin-bottom: 1mm;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .tag {
+      display: inline-block;
+      margin-bottom: 1.5mm;
+      padding: 0.7mm 1.8mm;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 7.4pt;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .edu-row, .recognition-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4mm;
+      padding: 1.25mm 0;
+      border-bottom: 1px solid #edf0f4;
+    }
+    .edu-row:last-child, .recognition-row:last-child { border-bottom: 0; }
+    .edu-row strong, .recognition-row strong { display: block; }
+    .edu-row span, .recognition-row span { color: var(--muted); }
+    .right-note {
+      color: var(--faint);
+      text-align: right;
+      white-space: nowrap;
+    }
+    .linkish { color: var(--accent); font-weight: 650; }
+    .page-break { break-before: auto; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Sunchit Sharma</h1>
+        <p class="headline">Software Engineer | Security Systems | AI-Native Engineering</p>
+      </div>
+      <div class="contact">
+        <span>London, United Kingdom</span>
+        <a href="mailto:sunchitsharma8@gmail.com">sunchitsharma8@gmail.com</a>
+        <a href="https://sunchitsharma.in">sunchitsharma.in</a>
+        <a href="https://www.linkedin.com/in/sunchit-sharma-991193120/">linkedin.com/in/sunchit-sharma-991193120</a>
+        <a href="https://github.com/sunchitsharma">github.com/sunchitsharma</a>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-title"><h2>Profile</h2><div class="rule"></div></div>
+      <p class="summary">Software engineer with 7+ years building production systems across Meta, Oracle, and Samsung Research. Current work focuses on large-scale security systems, login security, integrity, privacy, and end-to-end production reliability. Experienced across cloud data platforms, IoT, edge intelligence, and practical AI-assisted engineering workflows.</p>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Core Areas</h2><div class="rule"></div></div>
+      <div class="skills">
+        <span class="skill">Security systems</span>
+        <span class="skill">Login security</span>
+        <span class="skill">Integrity</span>
+        <span class="skill">Privacy</span>
+        <span class="skill">Distributed systems</span>
+        <span class="skill">Big Data platforms</span>
+        <span class="skill">IoT</span>
+        <span class="skill">Edge intelligence</span>
+        <span class="skill">AI-assisted workflows</span>
+        <span class="skill">Developer tooling</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Experience</h2><div class="rule"></div></div>
+
+      <article class="role">
+        <div class="role-main">
+          <div class="role-title">
+            <h3>Software Engineer</h3>
+            <span class="company">Meta</span>
+          </div>
+          <div class="role-meta">Greater London, United Kingdom</div>
+          <ul>
+            <li>Build large-scale security systems for products used by billions of people.</li>
+            <li>Work across login security, integrity, privacy, and end-to-end security system design.</li>
+            <li>Partner with product and infrastructure teams to move security work from design through production.</li>
+          </ul>
+        </div>
+        <div class="dates">Jan 2022 - Present</div>
+      </article>
+
+      <article class="role">
+        <div class="role-main">
+          <div class="role-title">
+            <h3>Software Developer II</h3>
+            <span class="company">Oracle</span>
+          </div>
+          <div class="role-meta">Bengaluru, India</div>
+          <ul>
+            <li>Resolved security vulnerabilities across Big Data platform components including Hadoop, Hive, and HBase.</li>
+            <li>Worked on bug reporting and fixes for large-scale cloud data infrastructure.</li>
+            <li>Worked closely with the internals of Big Data systems on enterprise cloud platforms.</li>
+          </ul>
+        </div>
+        <div class="dates">Aug 2021 - Jan 2022</div>
+      </article>
+
+      <article class="role">
+        <div class="role-main">
+          <div class="role-title">
+            <h3>Senior Software Engineer, Research</h3>
+            <span class="company">Samsung R&amp;D Institute India</span>
+          </div>
+          <div class="role-meta">Bengaluru, India</div>
+          <ul>
+            <li>Contributed to Samsung On-Device Neural Engine and LF Edge Home Edge orchestration platform.</li>
+            <li>Worked on Samsung's IoT framework for home automation and edge intelligence.</li>
+            <li>Built demos for IoT Solutions World Congress 2019 in Barcelona and Samsung Open Source Conference 2019 in Korea.</li>
+            <li>Received 5× Samsung Spot Awards for machine learning platform contributions and international demo impact.</li>
+          </ul>
+        </div>
+        <div class="dates">Jun 2019 - Aug 2021</div>
+      </article>
+
+      <article class="role">
+        <div class="role-main">
+          <div class="role-title">
+            <h3>Teaching Assistant</h3>
+            <span class="company">IIIT Hyderabad</span>
+          </div>
+          <div class="role-meta">Hyderabad, India</div>
+          <ul>
+            <li>CSE563: Internals of Application Servers, under Prof. Ramesh Loganathan.</li>
+            <li>CSE603: Advanced Problem Solving, under Prof. Venkatesh Choppella and Prof. Vikram Pudi.</li>
+          </ul>
+        </div>
+        <div class="dates">Jul 2018 - Apr 2019</div>
+      </article>
+
+      <article class="role">
+        <div class="role-main">
+          <div class="role-title">
+            <h3>Research Intern</h3>
+            <span class="company">Samsung R&amp;D Institute India</span>
+          </div>
+          <div class="role-meta">Bengaluru, India</div>
+          <ul>
+            <li>Developed cross-platform voice intelligence applications for assistant-like services across host environments.</li>
+          </ul>
+        </div>
+        <div class="dates">May 2018 - Jul 2018</div>
+      </article>
+    </section>
+
+    <section class="page-break">
+      <div class="section-title"><h2>Patents &amp; Public Work</h2><div class="rule"></div></div>
+      <div class="grid-2">
+        <article class="card">
+          <span class="tag">Granted patent</span>
+          <h3>US12010177B2</h3>
+          <p>Device and method for handling critical events in an IoT environment. Related PCT publication WO2023075028A1; priority IN202141049481.</p>
+        </article>
+        <article class="card">
+          <span class="tag">Samsung Research</span>
+          <h3>Embedded IoT and LF Edge HomeEdge</h3>
+          <p>Published work on edge orchestration, service offloading, distributed machine learning, and device selection for home IoT environments.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Projects</h2><div class="rule"></div></div>
+      <div class="grid-2">
+        <article class="card">
+          <span class="tag">Health tech</span>
+          <h3>Health Claw</h3>
+          <p>AI-first health dashboard that starts like a chatbot: meal photos, sleep notes, and Apple Watch screenshots are interpreted by AI, routed into nutrition/activity/recovery workflows, and turned into trends over time. Community: <span class="linkish">discord.gg/SA7gG3dcwk</span></p>
+        </article>
+        <article class="card">
+          <span class="tag">Archive</span>
+          <h3>More Projects</h3>
+          <p>Additional experiments, repos, and technical work live at <span class="linkish">github.com/sunchitsharma</span>.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Education</h2><div class="rule"></div></div>
+      <div class="edu-row">
+        <div>
+          <strong>M.Tech, Computer Science</strong>
+          <span>IIIT Hyderabad | GPA 8.68</span>
+        </div>
+        <div class="right-note">2017 - 2019</div>
+      </div>
+      <div class="edu-row">
+        <div>
+          <strong>B.Tech, Computer Science</strong>
+          <span>College of Engineering Roorkee</span>
+        </div>
+        <div class="right-note">2013 - 2017</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Recognition</h2><div class="rule"></div></div>
+      <div class="recognition-row">
+        <div><strong>IIIT PGEE</strong><span>All-India Rank 6</span></div>
+        <div class="right-note">2017</div>
+      </div>
+      <div class="recognition-row">
+        <div><strong>UGC NET</strong><span>99.72 percentile</span></div>
+        <div class="right-note">2018</div>
+      </div>
+      <div class="recognition-row">
+        <div><strong>GATE</strong><span>99.24 percentile</span></div>
+        <div class="right-note">2017</div>
+      </div>
+      <div class="recognition-row">
+        <div><strong>Dean's List</strong><span>3 postgraduate semesters</span></div>
+        <div class="right-note">IIIT Hyderabad</div>
+      </div>
+      <div class="recognition-row">
+        <div><strong>Samsung Spot Awards</strong><span>5× corporate recognition for shipping impact</span></div>
+        <div class="right-note">Samsung Research</div>
+      </div>
+      <div class="recognition-row">
+        <div><strong>University Leadership</strong><span>Student placement and cultural coordination</span></div>
+        <div class="right-note">University level</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Additional Links</h2><div class="rule"></div></div>
+      <div class="skills">
+        <span class="skill">medium.com/@sunchitsharma8</span>
+        <span class="skill">youtube.com/@sunchit_sharma</span>
+        <span class="skill">research.samsung.com blog</span>
+        <span class="skill">patents.google.com/US12010177B2</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
