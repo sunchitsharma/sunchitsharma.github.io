@@ -802,6 +802,11 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .contact-actions {
   display: flex; flex-direction: column; gap: 28px; align-items: flex-start;
 }
+.contact-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 .contact-socials {
   display: flex; align-items: center; gap: 14px;
   font-size: 14px; color: var(--ink-dim);
