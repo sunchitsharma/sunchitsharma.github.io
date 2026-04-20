@@ -259,18 +259,18 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .hero-title.is-in { transform: translate(-50%, 0); }
 .hero-name {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-family: var(--font-display);
-  font-size: clamp(16px, 2vw, 24px);
+  font-size: clamp(13px, 3.2vw, 22px);
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink-dim);
 }
 .hero-title h1 {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(34px, 5.4vw, 76px);
+  font-size: clamp(44px, 9vw, 84px);
   line-height: 0.98;
   letter-spacing: -0.035em;
   background: linear-gradient(180deg, #ffffff 0%, #b0b4c2 100%);
@@ -308,6 +308,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: inline-flex; align-items: center; gap: 10px;
   padding: 9px 16px;
   border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--line-strong);
   backdrop-filter: blur(14px);
