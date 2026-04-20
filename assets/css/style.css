@@ -611,6 +611,56 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .timeline-item { grid-template-columns: 1fr; gap: 14px; }
 }
 
+/* -------- Education -------- */
+.education-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.education-card {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.education-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.education-meta span {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  background: rgba(255,255,255,0.02);
+}
+.education-card h3 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.education-school {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.education-card p:not(.education-school) {
+  color: var(--ink-dim);
+  font-size: 14px;
+  line-height: 1.65;
+}
+@media (max-width: 1000px) {
+  .education-grid { grid-template-columns: 1fr; }
+}
+
 /* -------- Patents -------- */
 .patents-grid {
   display: grid;
